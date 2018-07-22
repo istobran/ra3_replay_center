@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"ra3_replay_center/models"
 	"io"
 	"os"
 )
@@ -24,6 +25,7 @@ func (c *ReplayController) Post() {
 		if err != nil {
 			beego.Error("file open err ", err)
 		}
+		models.ResolveReplay(file)
 		//create destination file making sure the path is writeable.
 		dst, err := os.Create("replays/" + files[i].Filename)
 		defer dst.Close()
