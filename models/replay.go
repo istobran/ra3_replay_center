@@ -5,19 +5,13 @@ import (
 	"strconv"
 	"time"
 	"mime/multipart"
+	"ra3_replay_center/utils"
 	"fmt"
 )
 
 var (
 	Replays map[string]*Replay
 )
-
-type Player struct {
-	Name				string
-	Position		int
-	Color				int
-	Team				int
-}
 
 type Replay struct {
 	Id					string
@@ -55,6 +49,11 @@ func DeleteReplay(Id string) {
 	delete(Replays, Id)
 }
 
-func ResolveReplay(r multipart.File) {
-	fmt.Println(r)
+func ResolveReplay(r multipart.File) (replay *Replay, err error) {
+	rh, err := utils.BuildReplayHeader(r);
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(rh)
+	return nil, nil
 }

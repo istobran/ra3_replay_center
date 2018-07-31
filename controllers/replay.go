@@ -23,17 +23,25 @@ func (c *ReplayController) Post() {
 		file, err := files[i].Open()
 		defer file.Close()
 		if err != nil {
-			beego.Error("file open err ", err)
+			beego.Error("file open err:", err)
+			break
 		}
-		models.ResolveReplay(file)
+		rp, err := models.ResolveReplay(file)
+		if err != nil {
+			beego.Error(files[i].Filename, "resolve err:", err)
+			break
+		}
+		beego.Informational("builded replay model:", rp);
 		//create destination file making sure the path is writeable.
 		dst, err := os.Create("replays/" + files[i].Filename)
 		defer dst.Close()
 		if err != nil {
-			beego.Error("file path is not writeable ", err)
+			beego.Error("file path is not writeable:", err)
+			break
 		}
 		if _, err := io.Copy(dst, file); err != nil {
 			beego.Error("file: " + files[i].Filename + " failed to save")
+			break
 		}
 		beego.Informational("file: " + files[i].Filename + " upload successfully")
 	}
