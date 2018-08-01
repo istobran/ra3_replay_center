@@ -1,10 +1,11 @@
 package controllers
 
 import (
-	"github.com/astaxie/beego"
-	"ra3_replay_center/models"
 	"io"
 	"os"
+	"ra3_replay_center/models"
+
+	"github.com/astaxie/beego"
 )
 
 type ReplayController struct {
@@ -26,12 +27,12 @@ func (c *ReplayController) Post() {
 			beego.Error("file open err:", err)
 			break
 		}
-		rp, err := models.ResolveReplay(file)
+		rp, err := models.ResolveReplay(file, files[i])
 		if err != nil {
 			beego.Error(files[i].Filename, "resolve err:", err)
 			break
 		}
-		beego.Informational("builded replay model:", rp);
+		beego.Informational("builded replay model:", rp)
 		//create destination file making sure the path is writeable.
 		dst, err := os.Create("replays/" + files[i].Filename)
 		defer dst.Close()
