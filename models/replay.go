@@ -55,8 +55,9 @@ func ResolveReplay(r multipart.File) (replay *Replay, err error) {
 		return nil, err
 	}
 	gi := rh.GetGameInfo()
-	pls := gi.GetPlayers()
+	// pls := gi.GetPlayers()
+	opt := gi.GetOptions()
 	// fmt.Println(rh)
-	fmt.Println(pls)
+	fmt.Println(opt)
 	return nil, nil
 }

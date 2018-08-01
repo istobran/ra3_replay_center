@@ -14,13 +14,13 @@ type M struct {
 type GameInfo struct {
 	M    M
 	MC   int    // Map CRC
-	MS   int    // Map FileSize
+	MS   int    // Map Size
 	SD   int    // Seed
 	GSID int    // GameSpy id
 	GT   int    // unknown
 	PC   int    // Post Commentator
-	RU   string // Global Config
-	S    string // Player Config
+	RU   string // Game Options
+	S    string // Player Detail
 }
 
 type PlayerDetail struct {
@@ -36,6 +36,17 @@ type PlayerDetail struct {
 	Clan     string // 战队名
 	Mode     int    // AI 模式
 	Human    bool
+}
+
+type GameOption struct {
+	InitialCameraPlayer int  // 初始视角所在玩家
+	GameSpeed           int  // 游戏速度
+	InitialResources    int  // 初始资金
+	BroadcastGame       bool // 允许广播
+	AllowCommentary     bool // 允许评论
+	TapeDelay           int  // 启动延迟
+	RandomCrates        bool // 随机生成箱子
+	EnableVoIP          bool // 允许语音
 }
 
 var (
@@ -93,17 +104,19 @@ func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 	return players
 }
 
-// func (rh *ReplayHeader) ReadMap() {
-// 	return
-// }
-
-// func (rh *ReplayHeader) ReadMisc() {
-// 	return
-// }
-
-// func (rh *ReplayHeader) ReadOptions() {
-// 	return
-// }
+func (g *GameInfo) GetOptions() (opt GameOption) {
+	opt = GameOption{}
+	arr := strings.Split(g.RU, " ")
+	opt.InitialCameraPlayer = ParseInt(arr[0])
+	opt.GameSpeed = ParseInt(arr[1])
+	opt.InitialResources = ParseInt(arr[2])
+	opt.BroadcastGame = ParseInt(arr[3]) == 1
+	opt.AllowCommentary = ParseInt(arr[4]) == 1
+	opt.TapeDelay = ParseInt(arr[5])
+	opt.RandomCrates = ParseInt(arr[6]) == 1
+	opt.EnableVoIP = ParseInt(arr[7]) == 1
+	return opt
+}
 
 func transformColor(cvalue string) (color string) {
 	v, _ := strconv.Atoi(cvalue)
