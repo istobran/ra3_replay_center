@@ -2,11 +2,11 @@ package models
 
 import (
 	"errors"
-	"strconv"
-	"time"
+	"fmt"
 	"mime/multipart"
 	"ra3_replay_center/utils"
-	"fmt"
+	"strconv"
+	"time"
 )
 
 var (
@@ -14,11 +14,11 @@ var (
 )
 
 type Replay struct {
-	Id					string
-	Name				string
-	FileName		string
-	MapName			string
-	GameVersion	string
+	Id          string
+	Name        string
+	FileName    string
+	MapName     string
+	GameVersion string
 	// Players			Player[]
 	// PlayTime		Date
 	// CreateTime	Date
@@ -50,10 +50,13 @@ func DeleteReplay(Id string) {
 }
 
 func ResolveReplay(r multipart.File) (replay *Replay, err error) {
-	rh, err := utils.BuildReplayHeader(r);
+	rh, err := utils.BuildReplayHeader(r)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(rh)
+	gi := rh.GetGameInfo()
+	pls := gi.GetPlayers()
+	// fmt.Println(rh)
+	fmt.Println(pls)
 	return nil, nil
 }
