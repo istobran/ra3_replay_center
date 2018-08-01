@@ -17,7 +17,7 @@ type ReplayHeader struct {
 	MatchMapId					string
 
 	NumberOfPlayers			byte
-	PlayerData					[]Player
+	PlayerMap						[]Player
 
 	Offset							uint32
 	StrReplLength				uint32

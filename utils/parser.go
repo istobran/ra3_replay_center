@@ -43,15 +43,15 @@ type Player struct {
 }
 
 func BuildReplayHeader(f multipart.File) (rh *ReplayHeader, err error) {
-	buffer := make([]byte, BUFFER_SIZE)
-	_, err = f.Read(buffer)
+	headBuffer := make([]byte, BUFFER_SIZE)
+	_, err = f.Read(headBuffer)
 	if err != nil {
 		return nil, err
 	}
-	if string(buffer[:MAGIC_SIZE]) != FILE_HEADER {
+	if string(headBuffer[:MAGIC_SIZE]) != FILE_HEADER {
 		return nil, errors.New("File is not Red Alert Replay!!")
 	}
-	return Parse(buffer), nil
+	return Parse(headBuffer), nil
 }
 
 func Parse(bytesBuffer []byte) (rh *ReplayHeader) {
@@ -107,7 +107,7 @@ func Parse(bytesBuffer []byte) (rh *ReplayHeader) {
 				}
 			case reflect.Slice:
 				switch fieldName {
-					case "PlayerData":
+					case "PlayerMap":
 						players := make([]Player, 0)
 						for j := 0; j < int(rh.NumberOfPlayers) + 1; j++ {
 							player := Player{}
@@ -132,8 +132,7 @@ func Parse(bytesBuffer []byte) (rh *ReplayHeader) {
 				switch fieldName {
 					case "DateTime":
 						len := DATETIME_SIZE*2
-						dtBuffer := buffer.Next(len)
-						dt := &DateTime{}
+						dtBuffer, dt := buffer.Next(len), &DateTime{}
 						dtKeys := reflect.ValueOf(dt).Elem()
 						for j := 0; j < len; j += 2 {
 							dtKeys.Field(j/2).SetUint(uint64(ToUInt16LE([]byte{dtBuffer[j], dtBuffer[j+1]})))
