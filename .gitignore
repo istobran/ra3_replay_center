@@ -13,3 +13,5 @@
 *.tmp
 ra3_replay_center
 replays/
+
+.DS_Store

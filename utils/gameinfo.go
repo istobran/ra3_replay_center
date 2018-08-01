@@ -24,29 +24,29 @@ type GameInfo struct {
 }
 
 type PlayerDetail struct {
-	Name     string
-	IP       string
-	Port     int
-	Flag     string // TT|FT
-	Color    string
-	Army     int
-	Position int
-	Team     int
-	Handicap int
-	Clan     string // 战队名
-	Mode     int    // AI 模式
-	Human    bool
+	Name     string `json:"name"`
+	IP       string `json:"ip"`
+	Port     int    `json:"port"`
+	Flag     string `json:"flag"` // TT|FT
+	Color    string `json:"color"`
+	Army     int    `json:"army"`
+	Position int    `json:"position"`
+	Team     int    `json:"team"`
+	Handicap int    `json:"handicap"`
+	Clan     string `json:"clan"` // 战队名
+	Mode     int    `json:"mode"` // AI 模式
+	Human    bool   `json:"human"`
 }
 
 type GameOption struct {
-	InitialCameraPlayer int  // 初始视角所在玩家
-	GameSpeed           int  // 游戏速度
-	InitialResources    int  // 初始资金
-	BroadcastGame       bool // 允许广播
-	AllowCommentary     bool // 允许评论
-	TapeDelay           int  // 启动延迟
-	RandomCrates        bool // 随机生成箱子
-	EnableVoIP          bool // 允许语音
+	InitialCameraPlayer int  `json:"initial_camera_player"` // 初始视角所在玩家
+	GameSpeed           int  `json:"game_speed"`            // 游戏速度
+	InitialResources    int  `json:"initial_resources"`     // 初始资金
+	BroadcastGame       bool `json:"broadcast_game"`        // 允许广播
+	AllowCommentary     bool `json:"allow_commentary"`      // 允许评论
+	TapeDelay           int  `json:"tape_delay"`            // 启动延迟
+	RandomCrates        bool `json:"random_crates"`         // 随机生成箱子
+	EnableVoIP          bool `json:"enable_voip"`           // 允许语音
 }
 
 var (
