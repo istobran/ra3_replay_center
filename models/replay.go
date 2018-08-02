@@ -1,16 +1,13 @@
 package models
 
 import (
-	"crypto/sha1"
 	"errors"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"ra3_replay_center/utils"
 	"strconv"
 	"time"
-
-	"github.com/astaxie/beego"
 )
 
 var (
@@ -33,6 +30,9 @@ type Replay struct {
 	MapPath         string               `json:"map_path"`          // 地图路径
 	Players         []utils.PlayerDetail `json:"players"`           // 玩家列表
 	Options         utils.GameOption     `json:"options"`           // 游戏预设
+	HeaderLen       int                  `json:"header_len"`        // 头部大小
+	BodyLen         int                  `json:"body_len"`          // 数据体大小
+	FooterLen       int                  `json:"footer_len"`        // 底部大小
 	// Header          utils.ReplayHeader   // 文件头部
 	// Body            utils.ReplayBody   // 文件数据
 	// Footer          utils.ReplayFooter // 文件底部
@@ -65,12 +65,28 @@ func DeleteReplay(Id string) {
 
 func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, err error) {
 	rp := &Replay{}
-	rh, err := utils.BuildReplayHeader(r)
+	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
+	rh, hsize, err := utils.BuildReplayHeader(data)
+	if err != nil {
+		return nil, err
+	}
+	rp.HeaderLen = hsize
+	_, bsize, err := utils.BuildReplayBody(data, hsize)
+	if err != nil {
+		return nil, err
+	}
+	rp.BodyLen = bsize
+	rf, fsize, err := utils.BuildReplayFooter(data, hsize+bsize)
+	if err != nil {
+		return nil, err
+	}
+	rp.FooterLen = fsize
+	fmt.Println("builded replay body", rf)
 	gi := rh.GetGameInfo()
-	rp.FileHash = HashFile(r)
+	rp.FileHash = utils.HashFile(r)
 	rp.FileName = h.Filename
 	rp.FileSize = int(r.(Sizer).Size())
 	rp.NumberOfPlayers = int(rh.NumberOfPlayers)
@@ -81,16 +97,4 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 	rp.Players = gi.GetPlayers()
 	rp.Options = gi.GetOptions()
 	return rp, nil
-}
-
-// 求出 SHA1 值
-func HashFile(r multipart.File) (hash string) {
-	h := sha1.New()
-	if _, err := r.Seek(0, 0); err != nil {
-		beego.Error(err)
-	}
-	if _, err := io.Copy(h, r); err != nil {
-		beego.Error(err)
-	}
-	return fmt.Sprintf("%x", h.Sum(nil))
 }

@@ -2,12 +2,11 @@ package utils
 
 import (
 	"regexp"
-	"strconv"
 	"strings"
 )
 
 type ReplayHeader struct {
-	StrMagic         FixedLenASCII
+	HeaderStr        FixedLenASCII
 	Hnumber1         byte
 	Vermajor         uint32
 	Verminor         uint32
@@ -63,9 +62,4 @@ func (rh *ReplayHeader) GetGameInfo() (g *GameInfo) {
 		arr[8],                    // S
 	}
 	return g
-}
-
-func ParseInt(s string) (v int) {
-	v, _ = strconv.Atoi(s)
-	return
 }
