@@ -24,6 +24,7 @@ type Replay struct {
 	FileHash        string               `json:"file_hash"`         // 文件 hash 值
 	FileName        string               `json:"file_name"`         // 文件名
 	FileSize        int                  `json:"file_size"`         // 文件大小
+	SaveName        string               `json:"save_name"`         // 录像保存名称
 	NumberOfPlayers int                  `json:"number_of_players"` // 玩家数量
 	Duration        int                  `json:"duration"`          // 游戏时长
 	GameVersion     string               `json:"game_version"`      // 游戏版本
@@ -93,6 +94,7 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 	rp.FileHash = utils.HashFile(r)
 	rp.FileName = h.Filename
 	rp.FileSize = int(r.(Sizer).Size())
+	rp.SaveName = string(rh.Filename)
 	rp.NumberOfPlayers = int(rh.NumberOfPlayers)
 	rp.Duration = rf.GetDuration()
 	rp.GameVersion = string(rh.Vermagic)
