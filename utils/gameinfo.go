@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 )
 
@@ -12,7 +11,7 @@ type M struct {
 }
 
 type GameInfo struct {
-	M    M
+	M    M      // Map Info
 	MC   int    // Map CRC
 	MS   int    // Map Size
 	SD   int    // Seed
@@ -24,18 +23,20 @@ type GameInfo struct {
 }
 
 type PlayerDetail struct {
-	Name     string `json:"name"`
-	IP       string `json:"ip"`
-	Port     int    `json:"port"`
-	Flag     string `json:"flag"` // TT|FT
-	Color    string `json:"color"`
-	Army     int    `json:"army"`
-	Position int    `json:"position"`
-	Team     int    `json:"team"`
-	Handicap int    `json:"handicap"`
-	Clan     string `json:"clan"` // 战队名
-	Mode     int    `json:"mode"` // AI 模式
-	Human    bool   `json:"human"`
+	Name     string `json:"name"`     // 玩家名
+	Uid      string `json:"uid"`      // 玩家 ip 地址的源字串
+	Ip       string `json:"p"`        // ip 地址
+	Port     int    `json:"port"`     // 端口号
+	Flag     string `json:"flag"`     // TT|FT
+	Color    string `json:"color"`    // 颜色
+	Faction  int    `json:"faction"`  // 阵营
+	Position int    `json:"position"` // 位置
+	Team     int    `json:"team"`     // 队伍
+	Handicap int    `json:"handicap"` // 暂时未知
+	Clan     string `json:"clan"`     // 战队名
+	Mode     int    `json:"mode"`     // AI 模式
+	Human    bool   `json:"human"`    // 是否人类玩家
+	Apm      int    `json:"apm"`      // actions per minute 平均每分钟操作数
 }
 
 type GameOption struct {
@@ -49,19 +50,6 @@ type GameOption struct {
 	EnableVoIP          bool `json:"enable_voip"`           // 允许语音
 }
 
-var (
-	ColorMap map[int]string = map[int]string{
-		-1: "#000000", // Random
-		0:  "#2B2BB3", // Navy
-		1:  "#FCE953", // Yellow
-		2:  "#00A744", // Green
-		3:  "#FD7602", // Orange
-		4:  "#8301FC", // Purple
-		5:  "#D50000", // Red
-		6:  "#04DAFA", // Cyan
-	}
-)
-
 func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 	players = make([]PlayerDetail, 0)
 	playerItems := strings.Split(g.S, ":")
@@ -73,11 +61,12 @@ func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 		case "H": // Human
 			pData := strings.Split(v, ",")
 			p.Name = pData[0][1:]
-			p.IP = transformIP(pData[1])
+			p.Uid = pData[1]
+			p.Ip = DecodeIP(pData[1])
 			p.Port = ParseInt(pData[2])
 			p.Flag = pData[3]
-			p.Color = transformColor(pData[4])
-			p.Army = ParseInt(pData[5])
+			p.Color = DecodeColor(pData[4])
+			p.Faction = ParseInt(pData[5])
 			p.Position = ParseInt(pData[6])
 			p.Team = ParseInt(pData[7]) + 1
 			p.Handicap = ParseInt(pData[8])
@@ -89,8 +78,8 @@ func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 		case "C": // Computer
 			pData := strings.Split(v, ",")
 			p.Name = pData[0][1:]
-			p.Color = transformColor(pData[1])
-			p.Army = ParseInt(pData[2])
+			p.Color = DecodeColor(pData[1])
+			p.Faction = ParseInt(pData[2])
 			p.Position = ParseInt(pData[3])
 			p.Team = ParseInt(pData[4]) + 1
 			p.Handicap = ParseInt(pData[5])
@@ -116,24 +105,4 @@ func (g *GameInfo) GetOptions() (opt GameOption) {
 	opt.RandomCrates = ParseInt(arr[6]) == 1
 	opt.EnableVoIP = ParseInt(arr[7]) == 1
 	return opt
-}
-
-func transformColor(cvalue string) (color string) {
-	v, _ := strconv.Atoi(cvalue)
-	return ColorMap[v]
-}
-
-func transformIP(uid string) (ip string) {
-	if uid == "0" {
-		return uid
-	}
-	if len(uid) == 7 {
-		uid = uid + "0"
-	}
-	ipv4Arr := make([]string, 4)
-	for i := 0; i < len(uid); i += 2 {
-		v, _ := strconv.ParseInt(uid[i:i+2], 16, 0)
-		ipv4Arr[i/2] = strconv.FormatInt(v, 10)
-	}
-	return strings.Join(ipv4Arr, ".")
 }

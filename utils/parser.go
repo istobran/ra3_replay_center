@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"encoding/binary"
 	"errors"
 	"fmt"
 	"reflect"
@@ -142,7 +141,7 @@ func BuildReplayBody(bytesData []byte, offset int) (rb *ReplayBody, size int, er
 			timecode, chunktype, chunksize, data, zero,
 		})
 	}
-	rb.Size = len(chunks) + 1
+	rb.Size = len(chunks)
 	rb.Chunks = chunks
 	return rb, BODY_SIZE, nil
 }
@@ -156,8 +155,8 @@ func BuildReplayFooter(bytesData []byte, offset int) (rf *ReplayFooter, size int
 	buffer := bytes.NewBuffer(footBuffer)
 	footerstr := string(BufNext(buffer, MAGIC_SIZE, &FOOTER_SIZE))
 	finaltimecode := ReadUInt32LE(buffer, &FOOTER_SIZE)
-	footerlength := binary.LittleEndian.Uint32(footBuffer[len(footBuffer)-4 : len(footBuffer)])
-	data := BufNext(buffer, int(footerlength)-MAGIC_SIZE-8, &FOOTER_SIZE)
+	footerlength := ToUInt32LE(footBuffer[len(footBuffer)-4 : len(footBuffer)])
+	data := BufNext(buffer, int(footerlength)-MAGIC_SIZE-12, &FOOTER_SIZE)
 	rf = &ReplayFooter{
 		footerstr, finaltimecode, data, footerlength,
 	}

@@ -19,12 +19,13 @@ type Sizer interface {
 }
 
 type Replay struct {
-	Id              string               `json:"id"`                // 录像Id
+	Id string `json:"id"` // 录像Id
+	// Name            string               `json:"name"`              // 录像名称
 	FileHash        string               `json:"file_hash"`         // 文件 hash 值
 	FileName        string               `json:"file_name"`         // 文件名
 	FileSize        int                  `json:"file_size"`         // 文件大小
 	NumberOfPlayers int                  `json:"number_of_players"` // 玩家数量
-	Duration        string               `json:"duration"`          // 游戏时长
+	Duration        int                  `json:"duration"`          // 游戏时长
 	GameVersion     string               `json:"game_version"`      // 游戏版本
 	MapName         string               `json:"map_name"`          // 地图名称
 	MapPath         string               `json:"map_path"`          // 地图路径
@@ -33,6 +34,9 @@ type Replay struct {
 	HeaderLen       int                  `json:"header_len"`        // 头部大小
 	BodyLen         int                  `json:"body_len"`          // 数据体大小
 	FooterLen       int                  `json:"footer_len"`        // 底部大小
+	// Uploader        string               `json:"uploader"`          // 上传者名称
+	// Email           string               `json:"email"`             // 上传者邮箱
+	// CreateTime      int                  `json:"create_time"`       // 创建时间
 	// Header          utils.ReplayHeader   // 文件头部
 	// Body            utils.ReplayBody   // 文件数据
 	// Footer          utils.ReplayFooter // 文件底部
@@ -74,7 +78,7 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 		return nil, err
 	}
 	rp.HeaderLen = hsize
-	_, bsize, err := utils.BuildReplayBody(data, hsize)
+	rb, bsize, err := utils.BuildReplayBody(data, hsize)
 	if err != nil {
 		return nil, err
 	}
@@ -90,11 +94,11 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 	rp.FileName = h.Filename
 	rp.FileSize = int(r.(Sizer).Size())
 	rp.NumberOfPlayers = int(rh.NumberOfPlayers)
-	// rp.Duration =
+	rp.Duration = rf.GetDuration()
 	rp.GameVersion = string(rh.Vermagic)
 	rp.MapName = rh.MatchMapName
 	rp.MapPath = gi.M.MapName
-	rp.Players = gi.GetPlayers()
+	rp.Players = rb.CalcAPM(gi.GetPlayers())
 	rp.Options = gi.GetOptions()
 	return rp, nil
 }

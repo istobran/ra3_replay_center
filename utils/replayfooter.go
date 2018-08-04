@@ -6,3 +6,7 @@ type ReplayFooter struct {
 	Data          []byte
 	FooterLength  uint32
 }
+
+func (rf *ReplayFooter) GetDuration() (dur int) {
+	return int(rf.FinalTimeCode) / 15
+}
