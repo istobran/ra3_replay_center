@@ -118,7 +118,6 @@ type ReplayBody struct {
 
 // 计算玩家手速
 func (rb *ReplayBody) CalcAPM(players []PlayerDetail) (result []PlayerDetail) {
-	fmt.Println("calculating apm:", len(rb.Chunks))
 	playermap := make(map[int]int)
 	playertime := make(map[int]int)
 	// 过滤掉视角切换
@@ -127,40 +126,22 @@ func (rb *ReplayBody) CalcAPM(players []PlayerDetail) (result []PlayerDetail) {
 		switch rb.Chunks[i].ChunkType {
 		case 1:
 			chunkData := rb.Chunks[i].Data
-			// htype := chunkData[0]
 			number_of_commands := int(ToUInt32LE(chunkData[1:5]))
 			payload := chunkData[5:]
-			// var payloadArr [][]byte
-			// if number_of_commands > 1 {
-			// 	payloadArr = bytes.SplitAfter(chunkData[5:], []byte{0xFF})
-			// 	payloadArr = payloadArr[:len(payloadArr)-1]
-			// } else {
-			// 	payloadArr = [][]byte{chunkData[5:]}
-			// }
-			// if number_of_commands != len(payloadArr) {
-			// 	fmt.Println("payload data:", number_of_commands, payloadArr)
-			// }
-			// 结论：用 byte split 计算出来的命令数不准确
-
 			payloadArr := make([][]byte, 0)
 			if number_of_commands > 1 {
-				// fmt.Println("number of commands", number_of_commands)
 				// 多条命令，需要拆分命令
 				for j, ptr, pLen := 0, 0, number_of_commands; j < pLen; j++ {
 					commandId := payload[ptr]
 					cmdsize := CmdSizeMap[int(commandId)]
 					var arr []byte
-					// fmt.Println("innerLoop", cmdsize, ptr, payload)
 					if cmdsize < 0 { // Variable-length
 						arr = ParseVariableLen(payload[ptr:], cmdsize)
 					} else if cmdsize == 0 { // Special-length
-						// fmt.Println("matched special length:", commandId, cmdsize, payload[ptr:])
 						arr = ParseSpecialLen(payload[ptr:])
-						fmt.Println("parsed special length:", arr)
 					} else { // Fixed-length
 						arr = ParseFixedLen(payload[ptr:], cmdsize)
 					}
-					// fmt.Println("parsed bytes", arr)
 					payloadArr = append(payloadArr, arr)
 					ptr += len(arr)
 				}
@@ -180,19 +161,26 @@ func (rb *ReplayBody) CalcAPM(players []PlayerDetail) (result []PlayerDetail) {
 				if int(item[0]) == 0x21 {
 					continue
 				}
-				playerIndex := int(item[1]) / 5 // 8 - k, k is 2 for RA3
+				playerIndex := int(item[1])/8 - 2 // playerId/8 - k, k is 2 for RA3
 				playermap[playerIndex]++
 				playertime[playerIndex] = timeCode
 			}
-			// fmt.Printf("noc: %d, cid: %x\n", noc, rb.Chunks[i].Data[6])
-		// case 2:
-		// 	fmt.Println("matched type 1, noc:", ToUInt32LE(rb.Chunks[i].Data[1:5]))
+		case 2: // 记录了摄像头的位置和角度，每 1/15 秒一帧
+			// chunkData := rb.Chunks[i].Data
+			// playerIndex := int(ToUInt32LE(chunkData[2:6]))
+			// timeCode := int(ToUInt32LE(chunkData[7:11]))
+			// fmt.Println("matched type 2", playerIndex, timeCode)
+			fallthrough
 		default:
 			continue
 		}
 	}
-	fmt.Println("player map:", playermap)
-	fmt.Println("player time:", playertime)
+	// fmt.Println("player map:", playermap)
+	// fmt.Println("player time:", playertime)
+	for k, v := range playermap {
+		minutes := float64(playertime[k] / 15 / 60)
+		players[k].Apm = int(float64(v) / minutes)
+	}
 	return players
 }
 

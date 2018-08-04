@@ -23,6 +23,7 @@ type GameInfo struct {
 }
 
 type PlayerDetail struct {
+	Index    int    `json:"index"`    // 玩家的 index
 	Name     string `json:"name"`     // 玩家名
 	Uid      string `json:"uid"`      // 玩家 ip 地址的源字串
 	Ip       string `json:"p"`        // ip 地址
@@ -54,12 +55,13 @@ func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 	players = make([]PlayerDetail, 0)
 	playerItems := strings.Split(g.S, ":")
 	playerItems = playerItems[:len(playerItems)-1]
-	for _, v := range playerItems {
+	for index, v := range playerItems {
 		p := PlayerDetail{}
 		fmt.Println("player", v)
 		switch string(v[0]) {
 		case "H": // Human
 			pData := strings.Split(v, ",")
+			p.Index = index
 			p.Name = pData[0][1:]
 			p.Uid = pData[1]
 			p.Ip = DecodeIP(pData[1])
@@ -77,6 +79,7 @@ func (g *GameInfo) GetPlayers() (players []PlayerDetail) {
 			players = append(players, p)
 		case "C": // Computer
 			pData := strings.Split(v, ",")
+			p.Index = index
 			p.Name = pData[0][1:]
 			p.Color = DecodeColor(pData[1])
 			p.Faction = ParseInt(pData[2])
