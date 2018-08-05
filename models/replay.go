@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
@@ -21,7 +20,7 @@ type Sizer interface {
 }
 
 type Replay struct {
-	Id              int                      `json:"id" orm:"auto;pk"`                              // 录像Id
+	Id              int                      `json:"-" orm:"auto;pk"`                               // 录像Id
 	FileHash        string                   `json:"file_hash"`                                     // 文件 hash 值
 	FileName        string                   `json:"file_name"`                                     // 文件名
 	FileSize        int                      `json:"file_size"`                                     // 文件大小
@@ -50,16 +49,11 @@ func init() {
 }
 
 func AddReplay(replay *Replay) (Id int) {
-	// 需要先判断数据库中是否已存在
 	id, err := o.Insert(replay)
 	if err != nil {
 		panic(err)
 	}
 	return int(id)
-}
-
-func GetReplay(Id int) (replay *Replay, err error) {
-	return nil, errors.New("Replay Not Exist")
 }
 
 func GetReplayByHash(hash string) (replay *Replay) {
@@ -79,14 +73,6 @@ func GetReplayByHash(hash string) (replay *Replay) {
 	}
 	replay.Options = options
 	return replay
-}
-
-func GetReplayList() map[string]*Replay {
-	return Replays
-}
-
-func DeleteReplay(Id string) {
-	delete(Replays, Id)
 }
 
 func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, err error) {

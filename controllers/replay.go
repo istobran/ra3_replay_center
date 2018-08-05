@@ -25,9 +25,6 @@ type CommonResponse struct {
 	Data    interface{} `json:"data"`
 }
 
-// TODO:
-// 需要做文件大小检测（InsertFilter）
-
 // @Title upload replay
 // @Description upload a ra3 replay
 // @router /upload [post]
