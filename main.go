@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "ra3_replay_center/routers"
+
 	"github.com/astaxie/beego"
 )
 

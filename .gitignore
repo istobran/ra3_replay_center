@@ -14,4 +14,7 @@
 ra3_replay_center
 replays/
 
+# exclude password
+conf/db.conf
+
 .DS_Store

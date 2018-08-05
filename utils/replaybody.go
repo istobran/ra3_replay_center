@@ -117,7 +117,7 @@ type ReplayBody struct {
 }
 
 // 计算玩家手速
-func (rb *ReplayBody) CalcAPM(players []PlayerDetail) (result []PlayerDetail) {
+func (rb *ReplayBody) CalcAPM(players []map[string]interface{}) (result []map[string]interface{}) {
 	playermap := make(map[int]int)
 	playertime := make(map[int]int)
 	// 过滤掉视角切换
@@ -179,7 +179,7 @@ func (rb *ReplayBody) CalcAPM(players []PlayerDetail) (result []PlayerDetail) {
 	// fmt.Println("player time:", playertime)
 	for k, v := range playermap {
 		minutes := float64(playertime[k] / 15 / 60)
-		players[k].Apm = int(float64(v) / minutes)
+		players[k]["Apm"] = int(float64(v) / minutes)
 	}
 	return players
 }
