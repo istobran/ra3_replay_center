@@ -37,7 +37,9 @@ func (this *ReplayController) Post() {
 	}
 	files, err := this.GetFiles("files[]")
 	if err != nil {
-		ProcErr(response, "getfiles err:"+err.Error())
+		response.Errcode = FAILURE
+		response.Errmsg = "getfiles err:" + err.Error()
+		logs.Notice(response.Errmsg)
 	} else {
 		rps := make([]models.Replay, len(files))
 		for i, _ := range files {
