@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	_ "ra3_replay_center/routers"
+	"ra3_replay_center/utils"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
@@ -29,6 +30,17 @@ func init() {
 		logs.Error(err)
 	}
 	logs.SetLogger(logs.AdapterMail, string(mailsource))
+	qcConfig, err := json.Marshal(map[string]interface{}{
+		"policyId":  beego.AppConfig.String("policy_id"),
+		"region":    beego.AppConfig.String("region"),
+		"secretId":  beego.AppConfig.String("secret_id"),
+		"secretKey": beego.AppConfig.String("secret_key"),
+		"level":     logs.LevelError,
+	})
+	if err != nil {
+		logs.Error(err)
+	}
+	logs.SetLogger(utils.AdapterQCloud, string(qcConfig))
 	logs.EnableFuncCallDepth(true)
 	logs.Async(1e3)
 }

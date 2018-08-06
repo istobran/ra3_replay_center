@@ -20,5 +20,6 @@ logs/
 # exclude sensitive info
 conf/db.conf
 conf/smtp.conf
+conf/qcloud.conf
 
 .DS_Store
