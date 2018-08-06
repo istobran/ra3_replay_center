@@ -84,6 +84,27 @@ func (this *ReplayController) Post() {
 	return
 }
 
+// @Title query hash
+// @Description query replay by hash
+// @router /queryhash [get]
+func (this *ReplayController) QueryHash() {
+	response := &CommonResponse{
+		Errcode: SUCCESS,
+		Errmsg:  "query finished",
+	}
+	hash := this.GetString("hash")
+	tmp := models.GetReplayByHash(hash)
+	if tmp.Id > 0 {
+		response.Data = tmp
+	} else {
+		response.Errcode = FAILURE
+		response.Errmsg = "no such replay"
+	}
+	this.Data["json"] = response
+	this.ServeJSON(true)
+	return
+}
+
 func ProcErr(resp *CommonResponse, msg string) {
 	resp.Errcode = FAILURE
 	resp.Errmsg = msg

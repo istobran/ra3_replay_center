@@ -174,7 +174,7 @@ func (rb *ReplayBody) CalcAPM(players []map[string]interface{}) (result []map[st
 	}
 	for k, v := range playermap {
 		minutes := float64(playertime[k] / 15 / 60)
-		players[k]["Apm"] = int(float64(v) / minutes)
+		players[k]["apm"] = int(float64(v) / minutes)
 	}
 	return players
 }

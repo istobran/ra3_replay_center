@@ -65,31 +65,31 @@ func (g *GameInfo) GetPlayers() (players []map[string]interface{}) {
 		switch string(v[0]) {
 		case "H": // Human
 			pData := strings.Split(v, ",")
-			p["Name"] = pData[0][1:]
-			p["Uid"] = pData[1]
-			p["Ip"] = DecodeIP(pData[1])
-			p["Port"] = ParseInt(pData[2])
-			p["Flag"] = pData[3]
-			p["Color"] = DecodeColor(pData[4])
-			p["Faction"] = ParseInt(pData[5])
-			p["Position"] = ParseInt(pData[6])
-			p["Team"] = ParseInt(pData[7]) + 1
-			p["Handicap"] = ParseInt(pData[8])
+			p["name"] = pData[0][1:]
+			p["uid"] = pData[1]
+			p["ip"] = DecodeIP(pData[1])
+			p["port"] = ParseInt(pData[2])
+			p["flag"] = pData[3]
+			p["color"] = DecodeColor(pData[4])
+			p["faction"] = ParseInt(pData[5])
+			p["position"] = ParseInt(pData[6])
+			p["team"] = ParseInt(pData[7]) + 1
+			p["handicap"] = ParseInt(pData[8])
 			if len(pData) > 11 {
-				p["Clan"] = pData[11]
+				p["clan"] = pData[11]
 			}
-			p["Human"] = true
+			p["human"] = true
 			players = append(players, p)
 		case "C": // Computer
 			pData := strings.Split(v, ",")
-			p["Name"] = pData[0][1:]
-			p["Color"] = DecodeColor(pData[1])
-			p["Faction"] = ParseInt(pData[2])
-			p["Position"] = ParseInt(pData[3])
-			p["Team"] = ParseInt(pData[4]) + 1
-			p["Handicap"] = ParseInt(pData[5])
-			p["Mode"] = ParseInt(pData[6])
-			p["Human"] = false
+			p["name"] = pData[0][1:]
+			p["color"] = DecodeColor(pData[1])
+			p["faction"] = ParseInt(pData[2])
+			p["position"] = ParseInt(pData[3])
+			p["team"] = ParseInt(pData[4]) + 1
+			p["handicap"] = ParseInt(pData[5])
+			p["mode"] = ParseInt(pData[6])
+			p["human"] = false
 			players = append(players, p)
 		case "X": // Closed
 			continue
@@ -101,13 +101,13 @@ func (g *GameInfo) GetPlayers() (players []map[string]interface{}) {
 func (g *GameInfo) GetOptions() (opt map[string]interface{}) {
 	opt = make(map[string]interface{})
 	arr := strings.Split(g.RU, " ")
-	opt["InitialCameraPlayer"] = ParseInt(arr[0])
-	opt["GameSpeed"] = ParseInt(arr[1])
-	opt["InitialResources"] = ParseInt(arr[2])
-	opt["BroadcastGame"] = ParseInt(arr[3]) == 1
-	opt["AllowCommentary"] = ParseInt(arr[4]) == 1
-	opt["TapeDelay"] = ParseInt(arr[5])
-	opt["RandomCrates"] = ParseInt(arr[6]) == 1
-	opt["EnableVoIP"] = ParseInt(arr[7]) == 1
+	opt["initial_camera_player"] = ParseInt(arr[0])
+	opt["game_speed"] = ParseInt(arr[1])
+	opt["initial_resources"] = ParseInt(arr[2])
+	opt["broadcast_game"] = ParseInt(arr[3]) == 1
+	opt["allow_commentary"] = ParseInt(arr[4]) == 1
+	opt["tape_delay"] = ParseInt(arr[5])
+	opt["random_crates"] = ParseInt(arr[6]) == 1
+	opt["enable_voip"] = ParseInt(arr[7]) == 1
 	return opt
 }
