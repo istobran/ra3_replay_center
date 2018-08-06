@@ -52,7 +52,7 @@ func (c *QCloudWriter) WriteMsg(when time.Time, msg string, level int) error {
 		"Action":    {QAPIAction},
 		"Region":    {c.Region},
 		"Timestamp": {strconv.FormatInt(when.Unix(), 10)},
-		"Nonce":     {strconv.FormatInt(int64(rand.Intn(int(^uint(0)>>1))), 10)},
+		"Nonce":     {strconv.FormatInt(rand.Int63n(int64(^uint64(0)>>1)), 10)},
 		"SecretId":  {c.SecretId},
 		"policyId":  {c.PolicyId},
 		"msg":       {msg},
