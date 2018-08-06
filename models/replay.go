@@ -2,12 +2,12 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"ra3_replay_center/utils"
 	"time"
 
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -51,6 +51,7 @@ func init() {
 func AddReplay(replay *Replay) (Id int) {
 	id, err := o.Insert(replay)
 	if err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	return int(id)
@@ -60,15 +61,18 @@ func GetReplayByHash(hash string) (replay *Replay) {
 	replay = &Replay{FileHash: hash}
 	err := o.Read(replay, "FileHash")
 	if err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	var players []map[string]interface{}
 	if err := json.Unmarshal([]byte(replay.PlayersJson), &players); err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	replay.Players = players
 	var options map[string]interface{}
 	if err := json.Unmarshal([]byte(replay.OptionsJson), &options); err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	replay.Options = options
@@ -96,7 +100,6 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 		return nil, err
 	}
 	rp.FooterLen = fsize
-	fmt.Println("builded replay body", rf)
 	gi := rh.GetGameInfo()
 	rp.FileHash = utils.HashFile(r)
 	rp.FileName = h.Filename
@@ -110,12 +113,14 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 	rp.Players = rb.CalcAPM(gi.GetPlayers())
 	serializedPlayers, err := json.Marshal(rp.Players)
 	if err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	rp.PlayersJson = string(serializedPlayers)
 	rp.Options = gi.GetOptions()
 	serializedOptions, err := json.Marshal(gi.GetOptions())
 	if err != nil {
+		logs.Error(err)
 		panic(err)
 	}
 	rp.OptionsJson = string(serializedOptions)

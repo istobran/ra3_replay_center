@@ -7,6 +7,8 @@ import (
 	"ra3_replay_center/models"
 	"ra3_replay_center/utils"
 
+	"github.com/astaxie/beego/logs"
+
 	"github.com/astaxie/beego"
 )
 
@@ -55,7 +57,7 @@ func (this *ReplayController) Post() {
 					ProcErr(response, fmt.Sprintf("file %s resolve err: %s", files[i].Filename, err.Error()))
 					break
 				}
-				beego.Informational("builded replay model:", rp)
+				logs.Info("builded replay model:", rp)
 				dst, err := os.Create("replays/" + rp.FileHash + ".ra3replay")
 				defer dst.Close()
 				if err != nil {
@@ -73,7 +75,7 @@ func (this *ReplayController) Post() {
 				models.AddReplay(rp)
 				rps[i] = *rp
 			}
-			beego.Informational("file: " + files[i].Filename + " upload successfully")
+			logs.Info("file: " + files[i].Filename + " upload successfully")
 		}
 		response.Data = &rps
 	}
@@ -85,5 +87,5 @@ func (this *ReplayController) Post() {
 func ProcErr(resp *CommonResponse, msg string) {
 	resp.Errcode = FAILURE
 	resp.Errmsg = msg
-	beego.Error(msg)
+	logs.Error(msg)
 }

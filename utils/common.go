@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf16"
 
-	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 )
 
 // RA3 Replay Constants
@@ -45,10 +45,10 @@ var (
 func HashFile(r multipart.File) (hash string) {
 	h := sha1.New()
 	if _, err := r.Seek(0, 0); err != nil {
-		beego.Error(err)
+		logs.Error(err)
 	}
 	if _, err := io.Copy(h, r); err != nil {
-		beego.Error(err)
+		logs.Error(err)
 	}
 	return fmt.Sprintf("%x", h.Sum(nil))
 }

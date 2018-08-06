@@ -1,8 +1,6 @@
 package utils
 
-import (
-	"fmt"
-)
+import "github.com/astaxie/beego/logs"
 
 var (
 	CmdSizeMap = map[int]int{
@@ -149,9 +147,8 @@ func (rb *ReplayBody) CalcAPM(players []map[string]interface{}) (result []map[st
 				// 一条命令
 				payloadArr = append(payloadArr, payload)
 			}
-			// fmt.Println("parsed payload arr:", payloadArr)
 			if len(payloadArr) != number_of_commands {
-				fmt.Println("parsed error:", number_of_commands, payloadArr)
+				logs.Error("parsed error:", number_of_commands, payloadArr)
 			}
 			// 遍历 payloadArr 获取玩家操作数
 			// 获取每位玩家的 finaltimecode
@@ -175,8 +172,6 @@ func (rb *ReplayBody) CalcAPM(players []map[string]interface{}) (result []map[st
 			continue
 		}
 	}
-	// fmt.Println("player map:", playermap)
-	// fmt.Println("player time:", playertime)
 	for k, v := range playermap {
 		minutes := float64(playertime[k] / 15 / 60)
 		players[k]["Apm"] = int(float64(v) / minutes)
@@ -186,7 +181,6 @@ func (rb *ReplayBody) CalcAPM(players []map[string]interface{}) (result []map[st
 
 func ParseVariableLen(payload []byte, offset int) (arr []byte) {
 	offset = -offset
-	// fmt.Println("parsed variable len", payload, len(payload), offset)
 	end, x := offset, payload[offset]
 	for {
 		if x == byte(0XFF) {

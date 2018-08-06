@@ -12,9 +12,13 @@
 *.out
 *.tmp
 ra3_replay_center
-replays/
 
-# exclude password
+
+replays/
+logs/
+
+# exclude sensitive info
 conf/db.conf
+conf/smtp.conf
 
 .DS_Store

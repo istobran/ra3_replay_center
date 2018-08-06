@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/astaxie/beego/logs"
 )
 
 type M struct {
@@ -60,7 +61,7 @@ func (g *GameInfo) GetPlayers() (players []map[string]interface{}) {
 	playerItems = playerItems[:len(playerItems)-1]
 	for _, v := range playerItems {
 		p := make(map[string]interface{})
-		fmt.Println("player", v)
+		logs.Info("player", v)
 		switch string(v[0]) {
 		case "H": // Human
 			pData := strings.Split(v, ",")
