@@ -52,7 +52,7 @@ func AddReplay(replay *Replay) (Id int) {
 	id, err := o.Insert(replay)
 	if err != nil {
 		logs.Error(err)
-		panic(err)
+		return -1
 	}
 	return int(id)
 }
@@ -62,18 +62,18 @@ func GetReplayByHash(hash string) (replay *Replay) {
 	err := o.Read(replay, "FileHash")
 	if err != nil {
 		logs.Error(err)
-		panic(err)
+		return replay
 	}
 	var players []map[string]interface{}
 	if err := json.Unmarshal([]byte(replay.PlayersJson), &players); err != nil {
 		logs.Error(err)
-		panic(err)
+		return replay
 	}
 	replay.Players = players
 	var options map[string]interface{}
 	if err := json.Unmarshal([]byte(replay.OptionsJson), &options); err != nil {
 		logs.Error(err)
-		panic(err)
+		return replay
 	}
 	replay.Options = options
 	return replay
@@ -113,15 +113,13 @@ func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, e
 	rp.Players = rb.CalcAPM(gi.GetPlayers())
 	serializedPlayers, err := json.Marshal(rp.Players)
 	if err != nil {
-		logs.Error(err)
-		panic(err)
+		return nil, err
 	}
 	rp.PlayersJson = string(serializedPlayers)
 	rp.Options = gi.GetOptions()
 	serializedOptions, err := json.Marshal(gi.GetOptions())
 	if err != nil {
-		logs.Error(err)
-		panic(err)
+		return nil, err
 	}
 	rp.OptionsJson = string(serializedOptions)
 	return rp, nil
