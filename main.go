@@ -54,7 +54,7 @@ func init() {
 	}
 	logs.SetLogger(utils.AdapterQCloud, string(qcConfig))
 	logs.EnableFuncCallDepth(true)
-	logs.Async(1e3)
+	logs.Async()
 }
 
 func main() {

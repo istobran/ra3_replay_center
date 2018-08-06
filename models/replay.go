@@ -61,7 +61,7 @@ func GetReplayByHash(hash string) (replay *Replay) {
 	replay = &Replay{FileHash: hash}
 	err := o.Read(replay, "FileHash")
 	if err != nil {
-		logs.Error(err)
+		logs.Notice(err)
 		return replay
 	}
 	var players []map[string]interface{}
@@ -81,6 +81,9 @@ func GetReplayByHash(hash string) (replay *Replay) {
 
 func ResolveReplay(r multipart.File, h *multipart.FileHeader) (replay *Replay, err error) {
 	rp := &Replay{}
+	if _, err := r.Seek(0, 0); err != nil {
+		return nil, err
+	}
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		return nil, err

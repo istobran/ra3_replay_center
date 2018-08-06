@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -84,7 +83,6 @@ func (c *QCloudWriter) generateSignature(params *url.Values) error {
 		return err
 	}
 	signSource := strings.Join([]string{"POST", QAPIDomain, QAPIPath, "?", sortedParams}, "")
-	fmt.Println(signSource)
 	secretKey := c.SecretKey
 	mac := hmac.New(sha1.New, []byte(secretKey))
 	mac.Write([]byte(signSource))
