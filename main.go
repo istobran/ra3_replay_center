@@ -20,7 +20,7 @@ func init() {
 		os.Mkdir(LOGPATH, os.ModePerm)
 	}
 	if _, err := os.Stat(REPPATH); os.IsNotExist(err) {
-		os.Mkdir(LOGPATH, os.ModePerm)
+		os.Mkdir(REPPATH, os.ModePerm)
 	}
 	logs.SetLogger(logs.AdapterFile, `{
 		"filename": "logs/replay_center_api.log",
